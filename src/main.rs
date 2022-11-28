@@ -16,9 +16,12 @@ async fn init_connection(is_server: bool, expected_num_accepts_uni: u32) -> Resu
         let conn = incoming_conn.await.unwrap();
         println!("[server] connection accepted: addr={}", conn.remote_address());
 
-        let mut send = conn
-            .open_uni()
+        let (mut send, mut recv) = conn
+            .open_bi()
             .await?;
+        send.write_all(b"Hello!").await?;
+        println!("[server] sent handshake");
+        recv.read_chunk(usize::MAX, true).await?;
         println!("[server] opened uni stream");
         send.write_u32(0).await?;
         send.flush().await?;
@@ -37,9 +40,13 @@ async fn init_connection(is_server: bool, expected_num_accepts_uni: u32) -> Resu
 
         for _ in 0..expected_num_accepts_uni {
             println!("[client] waiting for uni stream");
-            let mut recv = connection.accept_uni().await?;
+            let (mut send, mut recv) = connection.accept_bi().await?;
+            send.write_all(b"Hello!");
+            println!("[client] sent handshake");
+            recv.read_chunk(usize::MAX, true).await?;
             println!("[client] accepted uni stream");
             let id = recv.read_u32().await?;
+            println!("[client] id={}", id);
         }
 
         println!("[client] Initialized!");
