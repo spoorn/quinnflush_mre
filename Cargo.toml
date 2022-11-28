@@ -1,0 +1,14 @@
+[package]
+name = "quinnflush"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+quinn = "0.9.1"
+thiserror = "1.0.37"
+rustls = { version = "0.20.7", default-features = false, features = ["quic", "dangerous_configuration"] }
+rcgen = "0.10.0"
+tokio = { version = "1.21.2", features = ["full"] }
+tokio-test = "0.4.2"
