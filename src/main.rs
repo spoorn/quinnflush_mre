@@ -1,5 +1,7 @@
 use std::error::Error;
+use std::time::Duration;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
+use tokio::time::sleep;
 use crate::quinn_helpers::{make_client_endpoint, make_server_endpoint};
 
 mod quinn_helpers;
@@ -26,6 +28,7 @@ async fn init_connection(is_server: bool, expected_num_accepts_uni: u32) -> Resu
 
         loop {
             // Loop to keep server alive
+            sleep(Duration::from_millis(10000)).await;
         }
     } else {
         // Bind this endpoint to a UDP socket on the given client address.
